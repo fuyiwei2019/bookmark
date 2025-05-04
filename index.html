@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTools Navigator</title>
+    <style>
+        :root {
+            --primary: #0071e3;
+            --primary-dark: #0051a2;
+            --secondary: #86868b;
+            --bg-light: #f5f5f7;
+            --text-dark: #1d1d1f;
+            --text-light: #86868b;
+            --border: #d2d2d7;
+            --card-bg: #ffffff;
+            --header-bg: #0051a2;
+            --header-text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .description {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            color: #a1a1a6;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin: 0 0.25rem;
+        }
+
+        .tab-button:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .tab-button.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 113, 227, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .link-card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .link-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .link-card a {
+            color: var(--primary);
+            text-decoration: none;
+            word-break: break-all;
+            font-size: 0.9rem;
+        }
+
+        .link-card a:hover {
+            text-decoration: underline;
+        }
+
+        .link-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .link-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .search-box {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-box input {
+            padding: 0.75rem 1rem;
+            width: 100%;
+            max-width: 500px;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+        
+        .search-box input:focus {
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3), 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-list {
+            list-style: none;
+        }
+
+        .link-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .article-card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .article-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .article-date {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-link {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .article-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>开发工具导航</h1>
+        <p class="description">精心策划的网站资源集合，助力网站开发与数字营销</p>
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索工具和资源...">
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="research">需求收集</button>
+            <button class="tab-button" data-tab="essential">上站必备</button>
+            <button class="tab-button" data-tab="competitor">竞品调研</button>
+            <button class="tab-button" data-tab="templates">上站模板</button>
+            <button class="tab-button" data-tab="news">资讯</button>
+            <button class="tab-button" data-tab="articles">生财精华</button>
+        </div>
+
+        <div class="tab-content active" id="research">
+            <div class="section">
+                <h2 class="section-title">需求收集和关键词调研</h2>
+                <div class="link-grid">
+                    <div class="link-card">
+                        <h3>谷歌下拉词</h3>
+                        <a href="https://www.searchsuggest.tips/?keyword=" target="_blank">searchsuggest.tips</a>
+                        <p>查找谷歌搜索下拉关键词建议</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Toolify 榜单</h3>
+                        <a href="https://www.toolify.ai/Best-AI-Tools-revenue" target="_blank">toolify.ai</a>
+                        <p>AI工具收入排行榜</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>AI 导航站需求列表</h3>
+                        <a href="https://theresanaiforthat.com/requests" target="_blank">theresanaiforthat.com</a>
+                        <p>查看用户对AI工具的需求</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>关键词难度</h3>
+                        <a href="https://ahrefs.com/keyword-difficulty" target="_blank">ahrefs.com</a>
+                        <p>评估关键词竞争难度</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="essential">
+            <div class="section">
+                <h2 class="section-title">上站必备工具</h2>
+                <div class="link-grid">
+                    <div class="link-card">
+                        <h3>域名查询</h3>
+                        <a href="https://leandomainsearch.com/" target="_blank">leandomainsearch.com</a>
+                        <p>快速查找可用域名</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>域名查询</h3>
+                        <a href="https://query.domains/" target="_blank">query.domains</a>
+                        <p>域名查询服务</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>即时域名搜索</h3>
+                        <a href="https://instantdomainsearch.com/?q=" target="_blank">instantdomainsearch.com</a>
+                        <p>实时域名可用性检查</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Spaceship</h3>
+                        <a href="https://spaceship.com" target="_blank">spaceship.com</a>
+                        <p>域名注册服务</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Porkbun</h3>
+                        <a href="https://porkbun.com" target="_blank">porkbun.com</a>
+                        <p>域名注册服务</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Namecheap</h3>
+                        <a href="https://namecheap.com" target="_blank">namecheap.com</a>
+                        <p>经济实惠的域名注册服务</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>GitHub</h3>
+                        <a href="https://github.com" target="_blank">github.com</a>
+                        <p>代码托管与版本控制</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Cloudflare</h3>
+                        <a href="https://cloudflare.com" target="_blank">cloudflare.com</a>
+                        <p>网站安全与性能优化</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Vercel</h3>
+                        <a href="https://vercel.com" target="_blank">vercel.com</a>
+                        <p>前端项目托管部署</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Google Search Console</h3>
+                        <a href="https://search.google.com/search-console" target="_blank">search.google.com/search-console</a>
+                        <p>搜索引擎优化监控工具</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Google Analytics</h3>
+                        <a href="https://analytics.google.com/analytics/web/#/" target="_blank">analytics.google.com</a>
+                        <p>网站访问数据分析</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Bing Webmaster</h3>
+                        <a href="https://www.bing.com/webmasters/submiturl" target="_blank">bing.com/webmasters</a>
+                        <p>提交URL到必应搜索引擎</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="competitor">
+            <div class="section">
+                <h2 class="section-title">竞品调研工具</h2>
+                <div class="link-grid">
+                    <div class="link-card">
+                        <h3>AITDK</h3>
+                        <a href="https://aitdk.com" target="_blank">aitdk.com</a>
+                        <p>查看流量和网页关键词</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Ahrefs 免费工具</h3>
+                        <a href="https://ahrefs.com/free-seo-tools" target="_blank">ahrefs.com/free-seo-tools</a>
+                        <p>查看网站外链情况</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>SEMrush</h3>
+                        <a href="https://semrush.com" target="_blank">semrush.com</a>
+                        <p>查看网站关键词和竞争数据</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="templates">
+            <div class="section">
+                <h2 class="section-title">上站模板资源</h2>
+                <div class="link-grid">
+                    <div class="link-card">
+                        <h3>Dynamic Blog - Rin</h3>
+                        <a href="https://github.com/openRin/Rin" target="_blank">github.com/openRin/Rin</a>
+                        <p>基于Cloudflare Pages + Workers + D1 + R2的动态博客</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Next.js 15 Boilerplate</h3>
+                        <a href="https://github.com/ixartz/Next-js-Boilerplate" target="_blank">github.com/ixartz/Next-js-Boilerplate</a>
+                        <p>支持App Router和Page Router的Next.js 15模板</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>SaaS Boilerplate</h3>
+                        <a href="https://github.com/ixartz/SaaS-Boilerplate" target="_blank">github.com/ixartz/SaaS-Boilerplate</a>
+                        <p>Next.js + Tailwind CSS + Shadcn UI + TypeScript的SaaS模板</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">导航站模板</h2>
+                <div class="link-grid">
+                    <div class="link-card">
+                        <h3>FRE123 导航</h3>
+                        <a href="https://github.com/fre123-com/fre123-nav/" target="_blank">github.com/fre123-com/fre123-nav</a>
+                        <p>免费资源共享平台导航，一键搭建你的导航网站</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>OSS Gallery</h3>
+                        <a href="https://github.com/dubinc/oss-gallery?ref=ossgallery" target="_blank">github.com/dubinc/oss-gallery</a>
+                        <p>最佳开源项目众包列表</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>WebStack</h3>
+                        <a href="https://github.com/WebStackPage/WebStackPage.github.io" target="_blank">github.com/WebStackPage/WebStackPage.github.io</a>
+                        <p>响应式网址导航网站</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Tap4 AI WebUI</h3>
+                        <a href="https://github.com/6677-ai/tap4-ai-webui" target="_blank">github.com/6677-ai/tap4-ai-webui</a>
+                        <p>一键部署AI工具目录</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>GPTs Works</h3>
+                        <a href="https://github.com/all-in-aigc/gpts-works" target="_blank">github.com/all-in-aigc/gpts-works</a>
+                        <p>第三方GPTs商店</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Vercel Templates</h3>
+                        <a href="https://vercel.com/templates" target="_blank">vercel.com/templates</a>
+                        <p>Vercel模板中心</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="news">
+            <div class="section">
+                <h2 class="section-title">资讯渠道</h2>
+                <div class="link-grid">
+                    <div class="link-card">
+                        <h3>Reddit 子社区</h3>
+                        <a href="https://liberating-doll-b8a.notion.site/Reddit-1a8e8aed91b18021839ecba8b74e530b" target="_blank">Reddit子社区导航</a>
+                        <p>Notion页面整理的Reddit重要子社区</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Google Search Central</h3>
+                        <a href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=zh-cn" target="_blank">Google搜索中心</a>
+                        <p>SEO基础知识</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Ahrefs Trending</h3>
+                        <a href="https://ahrefs.com/websites#trending" target="_blank">ahrefs.com/websites</a>
+                        <p>热门网站趋势</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>AI Video SaaS Tools</h3>
+                        <a href="https://docs.google.com/spreadsheets/d/1QOdqq9KbjQj1JZO43vc1pir2rnEEsMUXzTDATrOCn2k/edit?gid=0#gid=0" target="_blank">Google表格</a>
+                        <p>AI视频SaaS工具列表</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Solopreneur Report</h3>
+                        <a href="https://docs.google.com/spreadsheets/d/1eUni44pIURML2VWFFXKzNmm-WKuuam9_ynr5Fo_Q74M/edit?gid=83151001#gid=83151001" target="_blank">Google表格</a>
+                        <p>Starter Story高级独立创业者报告</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>500MRR</h3>
+                        <a href="https://www.500mrr.com/" target="_blank">500mrr.com</a>
+                        <p>那些通过副业项目每月赚$500的人</p>
+                    </div>
+                    <div class="link-card">
+                        <h3>Hacker News: $500/month</h3>
+                        <a href="https://news.ycombinator.com/item?id=42373343" target="_blank">HN讨论</a>
+                        <p>2024年通过副业项目每月赚$500的案例</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="articles">
+            <div class="section">
+                <h2 class="section-title">生财精华文章</h2>
+                
+                <div class="article-card">
+                    <h3>不要轻易称自己为独立开发者</h3>
+                    <div class="article-date">2025/3/1</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/1525814845844482" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>AI 编程赛道第一课：Build a business ， not an App</h3>
+                    <div class="article-date">2025-02-06</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/2858151258225521" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>只靠想法就能赚钱的时代到来了！</h3>
+                    <div class="article-date">2024-11-13</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/4848511545851418" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>翻石头，是独立开发者的日常修行。</h3>
+                    <div class="article-date">2024-11-05</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/5121548228815414" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>用 AI 自学编程的最好时机到来了</h3>
+                    <div class="article-date">2024-07-23</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/5122484888125484" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>善用黑科技工具，做十倍速全栈程序员</h3>
+                    <div class="article-date">2023-08-20</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/188545124485142" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>什么产品好做？三个一</h3>
+                    <div class="article-date">2023-12-07</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/811452228445512" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>写给独立开发者：如何快速做出产品 MVP</h3>
+                    <div class="article-date">2023-02-09</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/814822455488822" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>如何获得产品 idea</h3>
+                    <div class="article-date">2022-11-10</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/212485241245121" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>完美的创业项目，是怎么被想出来的？</h3>
+                    <div class="article-date">2022-05-11</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/415414825512158" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>判断项目行不行的极简方法</h3>
+                    <div class="article-date">2022-04-25</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/184214255522812" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>2021 年 Google SEO 最关键有效的技巧· 站内</h3>
+                    <div class="article-date">2021-09-10</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/218514241452421" class="article-link" target="_blank">查看文章</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>0 资源，做出 3 个日 UV 过十万、7-8 个日 UV 过万的网站，分享我获得无限网站流量的秘籍</h3>
+                    <div class="article-date">2021-06-21</div>
+                    <a href="https://scys.com/articleDetail/xq_topic/182888851425182" class="article-link" target="_blank">查看文章</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>开发工具导航 © 2025 | 实用工具与网站收藏</p>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Add active class to current button and content
+                button.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const cards = document.querySelectorAll('.link-card, .article-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const link = card.querySelector('a').textContent.toLowerCase();
+                const description = card.querySelector('p')?.textContent.toLowerCase() || '';
+                
+                if (title.includes(searchTerm) || link.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
